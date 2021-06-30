@@ -92,7 +92,7 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
             if TS2_idx < 2:
                 tdcp_id = opt.dcp_criterion(HEprobs_id, LEprobs_id)
                 tdcp_ul = opt.dcp_criterion(HEprobs_ul, LEprobs_ul)
-                tcls_loss += opt.dcp_weight*tdcp_ul
+                tcls_loss += tdcp_ul
 
                 ldic['ptdcp_id'][0] += tdcp_id.item()
                 ldic['ptdcp_ul'][0] += tdcp_ul.item()
