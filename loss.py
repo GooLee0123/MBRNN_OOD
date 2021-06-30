@@ -103,11 +103,11 @@ class DiscrepancyLoss(nn.Module):
             - universal probs: (N, C) where C is the number of classes
             - specific probs: (N, C) where C is the number of classes
     """
-    def __init__(self, opt, margin=3.0, mean=False):
+    def __init__(self, opt, mean=False):
         super(DiscrepancyLoss, self).__init__()
 
         self.device = opt.device
-        self.margin = margin
+        self.margin = opt.dcp_margin
         self.mean = mean
 
     def forward(self, universal_probs, specific_probs):

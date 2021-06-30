@@ -109,8 +109,7 @@ def prepare_loss(opt):
     mean = True if opt.train else False
     opt.cls_criterion = AnchorLoss(gamma=opt.gamma)
     # opt.cls_criterion = torch.nn.CrossEntropyLoss(reduction='mean')
-    opt.dcp_criterion = DiscrepancyLoss(margin=opt.dcp_margin,
-                                        mean=mean)
+    opt.dcp_criterion = DiscrepancyLoss(opt, mean=mean)
 
     return opt
 
