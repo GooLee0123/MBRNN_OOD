@@ -43,7 +43,7 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
     # train_switch = False
     models = models.cuda()
     models = models.train()
-    for Be, (local_batch_id, local_zbin_id) in enumerate(db['train_in']):
+    for Be, (local_batch_id, local_zbin_id) in enumerate(db['train_id']):
         local_batch_id = local_batch_id.cuda()
         local_zbin_id = local_zbin_id.cuda()
 
@@ -115,13 +115,13 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
             ldic['ptLE'] = [0., 0.]
 
             if do_TS2:
-                avg_dcp_in = ldic['ptdcp_id'][0]/ldic['ptdcp_id'][1]
+                avg_dcp_id = ldic['ptdcp_id'][0]/ldic['ptdcp_id'][1]
                 avg_dcp_ul = ldic['ptdcp_ul'][0]/ldic['ptdcp_ul'][1]
 
                 ldic['ptdcp_id'] = [0., 0.]
                 ldic['ptdcp_ul'] = [0., 0.]
 
-                ldic['tdcp_id'].append(avg_dcp_in)
+                ldic['tdcp_id'].append(avg_dcp_id)
                 ldic['tdcp_ul'].append(avg_dcp_ul)
 
                 for g in optim.param_groups():
@@ -136,7 +136,7 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
             log_msg += "ANCHOR loss (HE): %.3f, " % avg_HE_cls
             log_msg += "ANCHOR loss (LE): %.3f" % avg_LE_cls
             if do_TS2:
-                log_msg += ", dcp loss (ID): %.3f" % avg_dcp_in
+                log_msg += ", dcp loss (ID): %.3f" % avg_dcp_id
                 log_msg += ", dcp loss (UL): %.3f" % avg_dcp_ul
 
             log_msg += ", learning rate: %.5f" % lr
@@ -146,28 +146,28 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
         if step != 0 and step % opt.vevery == 0:
             models = models.eval()
             with torch.no_grad():
-                vstep_in, vcls = 0, 0
-                for vlocal_batch_in, vlocal_zbin_in in db['val_id']:
+                vstep_id, vcls = 0, 0
+                for vlocal_batch_id, vlocal_zbin_id in db['val_id']:
                     # classification
-                    vlocal_batch_in = vlocal_batch_in.cuda()
-                    vlocal_zbin_in = vlocal_zbin_in.cuda()
+                    vlocal_batch_id = vlocal_batch_id.cuda()
+                    vlocal_zbin_id = vlocal_zbin_id.cuda()
 
-                    vHE_probs_in, vLE_probs_in = models(vlocal_batch_in)
+                    vHE_probs_id, vLE_probs_id = models(vlocal_batch_id)
 
-                    HEloss_anch = opt.cls_criterion(vHE_probs_in, vlocal_zbin_in)
-                    LEloss_anch = opt.cls_criterion(vLE_probs_in, vlocal_zbin_in)
+                    HEloss_anch = opt.cls_criterion(vHE_probs_id, vlocal_zbin_id)
+                    LEloss_anch = opt.cls_criterion(vLE_probs_id, vlocal_zbin_id)
 
                     vcls += HEloss_anch + LEloss_anch
 
                     # discrepancy
-                    vdcp_id = opt.dcp_criterion(vHE_probs_in, vLE_probs_in)
+                    vdcp_id = opt.dcp_criterion(vHE_probs_id, vLE_probs_id)
 
                     ldic['pvHE'] += HEloss_anch
                     ldic['pvLE'] += LEloss_anch
 
                     ldic['pvdcp_id'] += vdcp_id
 
-                    vstep_in += 1
+                    vstep_id += 1
 
                 nsample_ul = 100000
                 temp_db_ul = copy.deepcopy(db['val_ul'])
@@ -187,7 +187,7 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
                     ldic['pvdcp_ul'] += vdcp_loss_ul
                     vstep_ul += 1
 
-                avg_vdcp_in = ldic['pvdcp_id']/vstep_in
+                avg_vdcp_id = ldic['pvdcp_id']/vstep_id
                 avg_vdcp_ul = ldic['pvdcp_ul']/vstep_ul
 
                 ldic['pvHE'] = 0.
@@ -195,13 +195,13 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
                 ldic['pvdcp_id'] = 0.
                 ldic['pvdcp_ul'] = 0.
 
-                ldic['vdcp_id'].append(avg_vdcp_in)
+                ldic['vdcp_id'].append(avg_vdcp_id)
                 ldic['vdcp_ul'].append(avg_vdcp_ul)
 
-                avg_vloss = vcls/vstep_in
+                avg_vloss = vcls/vstep_id
                 cls_ckpt_cond = avg_vloss < best_vcls
 
-                vdcp_diff = avg_vdcp_in-avg_vdcp_ul
+                vdcp_diff = avg_vdcp_id-avg_vdcp_ul
                 dcp_ckpt_cond = do_TS2 and vdcp_diff > best_vdcp_diff
                 if cls_ckpt_cond or dcp_ckpt_cond:
                     if cls_ckpt_cond:
@@ -233,7 +233,7 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
                 vdat_len = len(db['val_id'].dataset)
 
                 log_msg = "Current validation ANCHOR loss: %.5f, " % avg_vloss
-                log_msg += "Current validation ID-DCP loss: %.5f, " % avg_vdcp_in
+                log_msg += "Current validation ID-DCP loss: %.5f, " % avg_vdcp_id
                 log_msg += "UL-DCP loss: %.5f\n" % avg_vdcp_ul
                 logging.info(log_msg)
 
@@ -292,7 +292,7 @@ def unsup_evaluate(db, models, opt):
     eval_set_id = db['eval_id'].dataset
     eval_set_lo = db['eval_lo'].dataset
     eval_set_ul = db['eval_ul'].dataset
-    zLE_in = eval_set_id.z.numpy()
+    zLE_id = eval_set_id.z.numpy()
     zLE_lo = eval_set_lo.z.numpy()
 
     idlen = len(eval_set_id)
