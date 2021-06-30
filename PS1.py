@@ -25,8 +25,6 @@ class Dataset(Dataset):
         self.method = opt.method
         self.bin_dn = opt.bin_dn
         self.data_dn = opt.data_dn
-        self.ul_prefix = opt.ul_prefix
-        self.tr_ul_prefix = opt.tr_ul_prefix
 
         if self.dopt == 'UL':
             self.X, self.y = self._load_data()
@@ -84,8 +82,7 @@ class Dataset(Dataset):
             _prefix = 'labeled_ood'
         fn = '%s/PS-DR1_%s_%s.npy' % (self.data_dn, _prefix, self.phase)
         if self.dopt == 'UL':
-            prf = self.tr_ul_prefix if self.train else self.ul_prefix
-            fn = fn.replace('.npy', '_%s.npy' % prf)
+            fn = fn.replace('.npy', '_RA_combined_usample.npy')
         self.logger.info("load data from %s" % fn)
 
         # data = np.load(fn)

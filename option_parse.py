@@ -75,18 +75,9 @@ def Parser():
     parser.add_argument('--ind',
                         default='galaxy', type=str,
                         dest='ind', metavar="galaxy")
-    parser.add_argument('--ul_prefix',
-                        default='RA_combined_usample', type=str,
-                        dest='ul_prefix', metavar="RA_combined_usample")
-    parser.add_argument('--tr_ul_prefix',
-                        default='RA_combined_usample', type=str,
-                        dest='tr_ul_prefix', metavar="RA_combined_usample")
     parser.add_argument('--load_key',
                         default='fine_tuned', type=str,
                         dest='load_key', metavar="fine_tuned")
-    parser.add_argument('--densemble',
-                        default='Ensemble', type=str,
-                        dest='densemble', metavar="Ensemble")
 
     parser.add_argument('--gamma',
                         default='0.0', type=str,
@@ -99,7 +90,7 @@ def Parser():
 
     ind_prefix = '_ind_'+opt.ind
     opt.data_dn += ind_prefix
-    opt.analysis_dn += ind_prefix+'_'+opt.method+'_'+opt.tr_ul_prefix
+    opt.analysis_dn += ind_prefix+'_'+opt.method+'_'+'RA_combined_usample'
 
     outfd_option = ['', 'NC'+str(opt.ncls)]
     if opt.finetune:
@@ -111,8 +102,8 @@ def Parser():
 
     ckpt_fd = 'checkpoint'+opt.outfd_prefix
     loss_fd = 'loss'+opt.outfd_prefix
-    quant_fd = 'quantity'+opt.outfd_prefix+'_'+opt.ul_prefix+'_'+opt.load_key
-    plot_fd = 'plot'+opt.outfd_prefix+'_'+opt.ul_prefix+'_'+opt.load_key
+    quant_fd = 'quantity'+opt.outfd_prefix+'_RA_combined_usample_'+opt.load_key
+    plot_fd = 'plot'+opt.outfd_prefix+'_RA_combined_usample_'+opt.load_key
 
     opt.ckpt_fd = os.path.join(opt.analysis_dn, opt.ckpt_dn, ckpt_fd)
     opt.loss_fd = os.path.join(opt.analysis_dn, opt.loss_dn, loss_fd)
