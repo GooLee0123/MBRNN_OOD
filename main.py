@@ -15,8 +15,6 @@ import utils
 
 from loss import AnchorLoss, DiscrepancyLoss
 from optim import Optimizer, Optimizers
-from ensemble import equal_bin_ensemble
-from result_analysis import lkhd_analysis, unsup_analysis
 
 torch.multiprocessing.set_sharing_strategy('file_system')
 
