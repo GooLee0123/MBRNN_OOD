@@ -39,9 +39,7 @@ python main.py
 python main.py --training-stage TS3
 ```
 
-
-
-The process will dump an array shaped [*nsamp*, *nbin*\*2+2] for in-distribution, labeled OOD, and unlabeled samples into the folder *Outputs* with *npy* format, where *nsamp* and *nbin* are the number of samples and bins, respectively. The first *nbin*\*2 columns of the array are model output probabilities from high and low entropy models, the next column contains photometric redshifts, and the last column is the OOD score.
+The processes will dump an array shaped [*nsamp*, *nbin*\*2+2] for in-distribution, labeled OOD, and unlabeled samples into the folder *Outputs* with *npy* format, where *nsamp* and *nbin* are the number of samples and bins, respectively. The first *nbin*\*2 columns of the array are model output probabilities from high and low entropy models, the following column contains photometric redshifts, and the last column is the OOD score.
 
 ## Option Change
 We deploy the model with the best-performing configuration described in our paper, but one can adjust the model structure and other settings by modifying the options of the *config_file/config.cfg* file.
