@@ -79,8 +79,6 @@ def Parser():
     opt = config_processing(parser.parse_args(remaining_argv))
 
     outfd_option = ['', 'NC'+str(opt.ncls)]
-    if opt.finetune:
-        outfd_option.append('ThreeFoldTrain')
     outfd_option.append('Gamma%s' % (str(opt.gamma).replace('.', '_')))
 
     opt.outfd_prefix = '_'.join(outfd_option)

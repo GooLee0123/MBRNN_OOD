@@ -35,9 +35,9 @@ def loss_containers(opt):
     return ldic
 
 
-def unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
-                      post_tune, finetune_tol, best_vcls, best_vdcp_diff, opt):
-    finetune_idx = 0
+def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
+                      do_TS3, TS2tol, best_vcls, best_vdcp_diff, opt):
+    TS2_idx = 0
     ldic = loss_containers(opt)
 
     # train_switch = False
@@ -49,8 +49,8 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
 
         optim.zero_grad()
 
-        if do_finetune:
-            if finetune_idx < 2:
+        if do_TS2:
+            if TS2_idx < 2:
                 local_batch_ul, _ = next(db['train_ul_cycle'])
                 local_batch_ul = local_batch_ul.cuda()
 
@@ -64,8 +64,8 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
 
         HEprobs, LEprobs = models(local_batch)
 
-        if do_finetune:
-            if finetune_idx < 2:
+        if do_TS2:
+            if TS2_idx < 2:
                 HEprobs_id = HEprobs[:nin]
                 HEprobs_ul = HEprobs[nin:]
 
@@ -88,8 +88,8 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
 
         tcls_loss = HEloss_anch + LEloss_anch
 
-        if do_finetune:
-            if finetune_idx < 2:
+        if do_TS2:
+            if TS2_idx < 2:
                 tdcp_id = opt.dcp_criterion(HEprobs_id, LEprobs_id)
                 tdcp_ul = opt.dcp_criterion(HEprobs_ul, LEprobs_ul)
                 tcls_loss += opt.dcp_weight*tdcp_ul
@@ -99,9 +99,9 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
                 ldic['ptdcp_id'][1] += 1
                 ldic['ptdcp_ul'][1] += 1
 
-                finetune_idx += 1
+                TS2_idx += 1
             else:
-                finetune_idx = 0
+                TS2_idx = 0
 
         tcls_loss.backward()
         optim.step()
@@ -114,7 +114,7 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
             ldic['ptHE'] = [0., 0.]
             ldic['ptLE'] = [0., 0.]
 
-            if do_finetune:
+            if do_TS2:
                 avg_dcp_in = ldic['ptdcp_id'][0]/ldic['ptdcp_id'][1]
                 avg_dcp_ul = ldic['ptdcp_ul'][0]/ldic['ptdcp_ul'][1]
 
@@ -125,17 +125,17 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
                 ldic['tdcp_ul'].append(avg_dcp_ul)
 
                 for g in optim.param_groups():
-                    g['lr'] = opt.finetune_lr
+                    g['lr'] = opt.TS2_lr
 
             for param in optim.param_groups():
                 lr = param['lr']  # learning rate.
 
             # log messages
-            log_msg = "(fine-tune) " if do_finetune else "(post-tune) "\
-                if post_tune else ""
+            log_msg = "(TS2) " if do_TS2 else "(TS3) "\
+                if do_TS3 else ""
             log_msg += "ANCHOR loss (HE): %.3f, " % avg_HE_cls
             log_msg += "ANCHOR loss (LE): %.3f" % avg_LE_cls
-            if do_finetune:
+            if do_TS2:
                 log_msg += ", dcp loss (ID): %.3f" % avg_dcp_in
                 log_msg += ", dcp loss (UL): %.3f" % avg_dcp_ul
 
@@ -202,7 +202,7 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
                 cls_ckpt_cond = avg_vloss < best_vcls
 
                 vdcp_diff = avg_vdcp_in-avg_vdcp_ul
-                dcp_ckpt_cond = do_finetune and vdcp_diff > best_vdcp_diff
+                dcp_ckpt_cond = do_TS2 and vdcp_diff > best_vdcp_diff
                 if cls_ckpt_cond or dcp_ckpt_cond:
                     if cls_ckpt_cond:
                         best_vcls = avg_vloss
@@ -213,22 +213,21 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
                     logging.info(msg)
 
                     checkpoint = Checkpoint(step, epoch, models, optim, opt=opt)
-                    checkpoint.save(do_finetune, post_tune)
+                    checkpoint.save(do_TS2, do_TS3)
                 if cls_ckpt_cond or dcp_ckpt_cond:
-                    finetune_tol = 0
+                    TS2tol = 0
                 else:
-                    finetune_tol += 1
+                    TS2tol += 1
 
-                if opt.finetune and not post_tune and not do_finetune and \
-                   finetune_tol > opt.finetune_patience:
-                    logging.info("Start to train with unlabeled data")
-                    do_finetune = True
-                    finetune_tol = 0
+                if not do_TS3 and not do_TS2 and TS2tol > opt.TS2_patience:
+                    logging.info("Start TS2")
+                    do_TS2 = True
+                    TS2tol = 0
 
-                if do_finetune and finetune_tol > opt.posttune_patience:
-                    logging.info("Stop fine-tuning and start post-tuning")
-                    do_finetune = False
-                    post_tune = True
+                if do_TS2 and TS2tol > opt.TS3_patience:
+                    logging.info("Stop TS2 and start TS3")
+                    do_TS2 = False
+                    do_TS3 = True
 
                 # for validation log message
                 vdat_len = len(db['val_id'].dataset)
@@ -244,8 +243,8 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
     if epoch >= opt.lr_decay_epoch:
         optim.update(avg_vloss, epoch)
 
-    return best_vcls, best_vdcp_diff, do_finetune, post_tune,\
-        finetune_tol, ldic, step, optim, db
+    return best_vcls, best_vdcp_diff, do_TS2, do_TS3,\
+        TS2tol, ldic, step, optim, db
 
 
 def unsup_train(db, models, optim, opt):
@@ -255,13 +254,13 @@ def unsup_train(db, models, optim, opt):
     stime = time.time()  # start time
     bcv = np.inf  # minimum validation loss placeholder
     bdv = 0  # maximum discrepancy difference between in and ul data
-    do_finetune = False
-    post_tune = False
-    finetune_tol = 0
+    do_TS2 = False
+    do_TS3 = False
+    TS2tol = 0
     for epoch in range(sepoch, opt.max_training_epoch):
-        args = unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
-                                 post_tune, finetune_tol, bcv, bdv, opt)
-        bcv, bdv, do_finetune, post_tune, finetune_tol, ldic, step, optim, db = args
+        args = unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
+                                 do_TS3, TS2tol, bcv, bdv, opt)
+        bcv, bdv, do_TS2, do_TS3, TS2tol, ldic, step, optim, db = args
 
         log_msg = "Finished epoch %s/%s" % (epoch, opt.max_training_epoch)
         logging.info(log_msg)

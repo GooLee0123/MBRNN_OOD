@@ -60,12 +60,7 @@ class Checkpoint():
 
     def save(self, ftune, ptune):
         if not ftune and not ptune:
-            key = 'pre_trained'
-            outdated = os.listdir(self.opt.ckpt_fd)
-            for od in outdated:
-                self.logger.info("Remove outdated checkpoint %s" % od)
-                shutil.rmtree(os.path.join(self.opt.ckpt_fd, od))
-
+            key = 'TS1'
             date_time = time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime())
         elif ftune and not ptune:
             # overwrite
