@@ -305,7 +305,7 @@ def unsup_evaluate(db, models, opt):
     placeholder_lo = get_placeholder(lolen, opt.ncls)
     placeholder_ul = get_placeholder(ullen, opt.ncls)
 
-    prefixs = ['id', 'lood', 'ul']
+    fnames = ['output_id', 'output_lood', 'output_ul']
     dbs = [db['eval_id'], db['eval_lo'], db['eval_ul']]
     phs = [placeholder_id, placeholder_lo, placeholder_ul]
     with torch.no_grad():
@@ -333,7 +333,7 @@ def unsup_evaluate(db, models, opt):
                 phs[i].za2[store_sidx:store_eidx] = dcp_loss
 
             outputs = get_outputs(placeholder_id)
-            save_results(outputs, opt, prefixs[i])
+            save_results(outputs, opt, fnames[i])
 
 
 def get_outputs(ph):
