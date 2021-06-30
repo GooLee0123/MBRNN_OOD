@@ -90,17 +90,14 @@ def prepare_db(opt):
         db['val_id'] = val_loader_id
         db['val_ul'] = val_loader_ul
     else:
-        val_set_id = PS1.Dataset('val', opt)
         eval_set_id = PS1.Dataset('eval', opt)
         eval_set_ul = PS1.Dataset('eval', opt, dopt='UL')
         eval_set_lo = PS1.Dataset('eval', opt, dopt='LOOD')
 
-        val_loader_id = torch.utils.data.DataLoader(val_set_id, **evdparams)
         eval_loader_id = torch.utils.data.DataLoader(eval_set_id, **evdparams)
         eval_loader_ul = torch.utils.data.DataLoader(eval_set_ul, **evdparams)
         eval_loader_lo = torch.utils.data.DataLoader(eval_set_lo, **evdparams)
 
-        db['val_id'] = val_loader_id
         db['eval_id'] = eval_loader_id
         db['eval_ul'] = eval_loader_ul
         db['eval_lo'] = eval_loader_lo
