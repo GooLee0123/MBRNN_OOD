@@ -136,6 +136,8 @@ def main():
         opt.device = 'cpu'
     else:
         opt.device = torch.device('cuda:%s' % opt.gpuid)
+    opt.device = 'cpu'
+    logging.info("Run with %s" % opt.device)
 
     db = prepare_db(opt)
     opt = prepare_loss(opt)
