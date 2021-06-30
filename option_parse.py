@@ -84,7 +84,7 @@ def Parser():
     opt.outfd_prefix = '_'.join(outfd_option)
 
     ckpt_fd = 'checkpoint'+opt.outfd_prefix
-    quant_fd = 'quantity'+opt.outfd_prefix+'_RA_combined_usample_'+opt.load_key
+    quant_fd = 'quantity'+opt.outfd_prefix+opt.load_key
 
     opt.ckpt_fd = os.path.join(opt.ckpt_dn, ckpt_fd)
     opt.quant_fd = os.path.join(opt.output_dn, opt.quant_dn, quant_fd)
