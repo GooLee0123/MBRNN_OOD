@@ -76,12 +76,9 @@ def prepare_db(opt):
     if opt.train:
         train_set_id = PS1.Dataset('train', opt)
         val_set_id = PS1.Dataset('val', opt)
-        if opt.tr_ul_prefix == 'LOOD':
-            train_set_ul = PS1.Dataset('train', opt, dopt='LOOD')
-            val_set_ul = PS1.Dataset('val', opt, dopt='LOOD')
-        else:
-            train_set_ul = PS1.Dataset('train', opt, dopt='UL')
-            val_set_ul = PS1.Dataset('val', opt, dopt='UL')
+
+        train_set_ul = PS1.Dataset('train', opt, dopt='UL')
+        val_set_ul = PS1.Dataset('val', opt, dopt='UL')
 
         train_loader_id = torch.utils.data.DataLoader(train_set_id, **dparams)
         train_loader_ul = torch.utils.data.DataLoader(train_set_ul, **dparams)
