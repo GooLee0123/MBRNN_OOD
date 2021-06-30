@@ -267,7 +267,7 @@ def unsup_train(db, models, optim, opt):
     logging.info("Training is done. Took %.3fh" % (dur/3600.))
 
 
-def get_placeholder(nrow, ncol):
+def get_placeholder(opt, nrow, ncol):
     Placeholder = namedtuple('Placeholder', ['p1', 'p2', 'za', 'dcp'])
 
     ph = Placeholder(torch.empty(nrow, ncol).to(opt.device),
@@ -296,9 +296,9 @@ def unsup_evaluate(db, models, opt):
     ullen = len(eval_set_ul)
 
     dcp_id = []
-    placeholder_id = get_placeholder(idlen, opt.ncls)
-    placeholder_lo = get_placeholder(lolen, opt.ncls)
-    placeholder_ul = get_placeholder(ullen, opt.ncls)
+    placeholder_id = get_placeholder(opt, idlen, opt.ncls)
+    placeholder_lo = get_placeholder(opt, lolen, opt.ncls)
+    placeholder_ul = get_placeholder(opt, ullen, opt.ncls)
 
     fnames = ['output_id', 'output_lood', 'output_ul']
     dbs = [db['eval_id'], db['eval_lo'], db['eval_ul']]
