@@ -76,6 +76,7 @@ def Parser():
                         default='TS2', type=str,
                         dest='load_key', metavar="TS2")
 
+    print(opt)
     opt = config_processing(parser.parse_args(remaining_argv))
 
     outfd_option = ['', 'NC'+str(opt.ncls)]
