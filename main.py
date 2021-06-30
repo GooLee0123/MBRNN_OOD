@@ -131,7 +131,6 @@ def prepare_models(opt):
 def main():
     opt = Parser()
 
-    torch.cuda.set_device(opt.gpuid)
     if not torch.cuda.is_available():
         opt.device = 'cpu'
     else:
