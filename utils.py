@@ -132,7 +132,7 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
 
             # log messages
             log_msg = "(TS2) " if do_TS2 else "(TS3) "\
-                if do_TS3 else ""
+                if do_TS3 else "(TS1) "
             log_msg += "ANCHOR loss (HE): %.3f, " % avg_HE_cls
             log_msg += "ANCHOR loss (LE): %.3f" % avg_LE_cls
             if do_TS2:
