@@ -91,5 +91,5 @@ class Checkpoint():
              'specific_network_state': self.models[1].state_dict()},
             os.path.join(path, model_state % key))
 
-        log_msg = "Checkpoint is saved at %s\n" % path
+        log_msg = "Checkpoint is saved at %s" % path
         self.logger.info(log_msg)
