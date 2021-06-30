@@ -28,10 +28,6 @@ class Dataset(Dataset):
         self.ul_prefix = opt.ul_prefix
         self.tr_ul_prefix = opt.tr_ul_prefix
 
-        self.psc = opt.psc
-        self.psc_reg = opt.psc_reg
-        self.psc_thr = opt.psc_thr
-
         if self.dopt == 'UL':
             self.X, self.y = self._load_data()
         else:
@@ -103,26 +99,6 @@ class Dataset(Dataset):
 
         if self.dopt == 'UL':
             x = np.array(data[:, :-1], dtype=np.float32)
-            if self.psc and not self.train:
-                psc_fn = os.path.join(self.data_dn,
-                                      'PSC_eval_%s.npy' % self.ul_prefix)
-                logging.info("Load PSC from %s" % psc_fn)
-
-                p2 = Path(psc_fn)
-                with p2.open('rb') as f2:
-                    fsz = os.fstat(f2.fileno()).st_size
-                    psc = np.load(f2)
-                    while f2.tell() < fsz:
-                        psc = np.vstack((psc, np.load(f2)))
-
-                psc_filter = psc <= 0.1 if self.psc_reg == 'low' \
-                    else psc > 0.1
-                psc_mask = np.where(~np.isnan(psc) & psc_filter)[0]
-
-                x = x[psc_mask]
-                y = y[psc_mask]
-
-                logging.info("The number of low-psc data is %i" % len(y))
             return torch.from_numpy(x), torch.from_numpy(y)
         else:
             x = torch.from_numpy(np.array(data[:, 1:-1], dtype=np.float32))

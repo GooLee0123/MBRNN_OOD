@@ -62,19 +62,10 @@ def Parser():
     parser.add_argument('--train',
                         default=False, type=str2bool,
                         dest='train', metavar="True")
-    parser.add_argument('--psc',
-                        default=False, type=str2bool,
-                        dest='psc', metavar="False")
-    parser.add_argument('--resume',
-                        default=False, type=str2bool,
-                        dest='resume', metavar="False")
     parser.add_argument('--ensemble',
                         default=False, type=str2bool,
                         dest='ensemble', metavar="False")
 
-    parser.add_argument('--psc_reg',
-                        default='low', type=str,
-                        dest='psc_reg', metavar="low")
     parser.add_argument('--logging',
                         default='file', type=str,
                         dest='logging', metavar="file")
