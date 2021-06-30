@@ -133,8 +133,8 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
             log_msg += "ANCHOR loss (HE): %.3f, " % avg_HE_cls
             log_msg += "ANCHOR loss (LE): %.3f" % avg_LE_cls
             if do_TS2:
-                log_msg += ", dcp loss (ID): %.3f" % avg_dcp_id
-                log_msg += ", dcp loss (UL): %.3f" % avg_dcp_ul
+                log_msg += ", OOD score (ID): %.3f" % -(avg_dcp_id-opt.dcp_margin)
+                log_msg += ", OOD score (UL): %.3f" % -(avg_dcp_ul-opt.dcp_margin)
 
             log_msg += ", learning rate: %.5f" % lr
             logging.info(log_msg)
@@ -230,8 +230,8 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
                 vdat_len = len(db['val_id'].dataset)
 
                 log_msg = "Current validation ANCHOR loss (HE+LE): %.5f, " % avg_vloss
-                log_msg += "Current validation ID-DCP loss: %.5f, " % avg_vdcp_id
-                log_msg += "UL-DCP loss: %.5f" % avg_vdcp_ul
+                log_msg += "Current OOD score of validation ID samples: %.5f, " % -(avg_vdcp_id-opt.dcp_margin)
+                log_msg += "OOD score of UL samples: %.5f" % -(avg_vdcp_ul-opt.dcp_margin)
                 logging.info(log_msg)
 
             models = models.train()
