@@ -81,9 +81,9 @@ class Models():
 
         self.logger = logging.getLogger(__name__)
 
-    def cuda(self):
+    def to(self, device):
         for model in self.models:
-            model.cuda()
+            model.to(device)
         return Models(self.models, self.opt,
                       phase=self.phase)
 

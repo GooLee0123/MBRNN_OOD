@@ -41,18 +41,18 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
     ldic = loss_containers(opt)
 
     # train_switch = False
-    models = models.cuda()
+    models = models.to(opt.device)
     models = models.train()
     for Be, (local_batch_id, local_zbin_id) in enumerate(db['train_id']):
-        local_batch_id = local_batch_id.cuda()
-        local_zbin_id = local_zbin_id.cuda()
+        local_batch_id = local_batch_id.to(opt.device)
+        local_zbin_id = local_zbin_id.to(opt.device)
 
         optim.zero_grad()
 
         if do_TS2:
             if TS2_idx < 2:
                 local_batch_ul, _ = next(db['train_ul_cycle'])
-                local_batch_ul = local_batch_ul.cuda()
+                local_batch_ul = local_batch_ul.to(opt.device)
 
                 local_batch = torch.cat((local_batch_id, local_batch_ul), 0)
 
@@ -146,8 +146,8 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
                 vstep_id, vcls = 0, 0
                 for vlocal_batch_id, vlocal_zbin_id in db['val_id']:
                     # classification
-                    vlocal_batch_id = vlocal_batch_id.cuda()
-                    vlocal_zbin_id = vlocal_zbin_id.cuda()
+                    vlocal_batch_id = vlocal_batch_id.to(opt.device)
+                    vlocal_zbin_id = vlocal_zbin_id.to(opt.device)
 
                     vHE_probs_id, vLE_probs_id = models(vlocal_batch_id)
 
@@ -175,7 +175,7 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
                 temp_db_ul.dataset.update_len(nsample_ul)
                 vstep_ul = 0
                 for vlocal_batch_ul, _ in temp_db_ul:
-                    vlocal_batch_ul = vlocal_batch_ul.cuda()
+                    vlocal_batch_ul = vlocal_batch_ul.to(opt.device)
 
                     vHE_probs_ul, vLE_probs_ul = models(vlocal_batch_ul)
 
@@ -270,10 +270,10 @@ def unsup_train(db, models, optim, opt):
 def get_placeholder(nrow, ncol):
     Placeholder = namedtuple('Placeholder', ['p1', 'p2', 'za', 'dcp'])
 
-    ph = Placeholder(torch.empty(nrow, ncol).cuda(),
-                     torch.empty(nrow, ncol).cuda(),
-                     torch.empty(nrow).cuda(),
-                     torch.empty(nrow).cuda())
+    ph = Placeholder(torch.empty(nrow, ncol).to(opt.device),
+                     torch.empty(nrow, ncol).to(opt.device),
+                     torch.empty(nrow).to(opt.device),
+                     torch.empty(nrow).to(opt.device))
     return ph
 
 
@@ -283,7 +283,7 @@ def unsup_evaluate(db, models, opt):
     # model setting
     models, _, _ = set_loaded_model(models, opt)
 
-    models = models.eval().zero_grad().cuda()
+    models = models.eval().zero_grad().to(opt.device)
 
     eval_set_id = db['eval_id'].dataset
     eval_set_lo = db['eval_lo'].dataset
@@ -306,9 +306,9 @@ def unsup_evaluate(db, models, opt):
     with torch.no_grad():
         for i in range(3):
             for bepoch, (local_batch, local_zbin) in enumerate(dbs[i]):
-                binc = eval_set_id.binc.cuda()
-                local_batch = local_batch.cuda()
-                local_zbin = local_zbin.cuda()
+                binc = eval_set_id.binc.to(opt.device)
+                local_batch = local_batch.to(opt.device)
+                local_zbin = local_zbin.to(opt.device)
 
                 # input into model
                 HEprobs, LEprobs = models(local_batch)

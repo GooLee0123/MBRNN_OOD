@@ -133,10 +133,10 @@ def main():
     opt = Parser()
 
     torch.cuda.set_device(opt.gpuid)
-    opt.device = torch.device('cuda:%s' % opt.gpuid)
-
     if not torch.cuda.is_available():
-        raise NotImplementedError("CAN'T RUN WITHOUT GPU")
+        opt.device = 'cpu'
+    else:
+        opt.device = torch.device('cuda:%s' % opt.gpuid)
 
     db = prepare_db(opt)
     opt = prepare_loss(opt)

@@ -39,8 +39,7 @@ class AnchorLoss(nn.Module):
             - Output: scalar
 
     """
-    def __init__(self, gamma=0.5, slack=0.05, anchor='neg',
-                 warm_up=False, sigma=2.):
+    def __init__(self, gamma=0.5, slack=0.05, anchor='neg', sigma=2.):
         super(AnchorLoss, self).__init__()
 
         assert anchor in ['neg', 'pos'], \
@@ -53,9 +52,6 @@ class AnchorLoss(nn.Module):
         self.sigma = sigma
         self.sig = nn.Sigmoid()
         self.EPS = 1e-12  # for preventing nan or inf
-
-        if warm_up:
-            self.ce = nn.CrossEntropyLoss().cuda()
 
         if anchor == 'pos':
             self.gamma_pos = gamma
@@ -121,9 +117,10 @@ class DiscrepancyLoss(nn.Module):
             - universal probs: (N, C) where C is the number of classes
             - specific probs: (N, C) where C is the number of classes
     """
-    def __init__(self, margin=3.0, mean=False):
+    def __init__(self, opt, margin=3.0, mean=False):
         super(DiscrepancyLoss, self).__init__()
 
+        self.device = opt.device
         self.margin = margin
         self.mean = mean
 
@@ -135,7 +132,7 @@ class DiscrepancyLoss(nn.Module):
 
         if self.mean:
             loss = self.margin - discrepancy.mean()
-            loss = max(torch.tensor(0.).cuda(), loss)
+            loss = max(torch.tensor(0.).to(self.device), loss)
         else:
             _eps = 1e-5
             _len = universal_probs.size(1)
