@@ -25,17 +25,12 @@ class AnchorLoss(nn.Module):
             slack(float, optional): a margin variable to penalize the output
             variables which are close to
                                     true positive prediction score
-            warm_up(bool, optional): if ``True``, the loss is replaced to
-            cross entropy for the first 5 epochs,
-                                     and additional epoch variable which
-                                     indicates the current epoch is needed
             anchor(string, optional): specifies the anchor probability type:
                                       ``pos``: modulate target class loss
                                       ``neg``: modulate background class loss
         Shape:
             - Input: (N, C) where C is the number of classes
             - Target: (N) where each value is the class label of each sample
-            - Epoch: int, optional variable when using warm_up
             - Output: scalar
 
     """
@@ -47,7 +42,6 @@ class AnchorLoss(nn.Module):
 
         self.gamma = gamma
         self.slack = slack
-        self.warm_up = warm_up
         self.anchor = anchor
         self.sigma = sigma
         self.sig = nn.Sigmoid()
@@ -65,14 +59,6 @@ class AnchorLoss(nn.Module):
             input = torch.from_numpy(input)
         if isinstance(target, np.ndarray):
             target = torch.from_numpy(target)
-        if self.warm_up and epoch is None:
-            raise AssertionError(
-                "If warm_up is set to ``True``, "
-                + "current epoch number is required")
-
-        if self.warm_up and epoch < 5:
-            loss = self.ce(input, target)
-            return loss
 
         target = target.view(-1, 1)
         pt = input
