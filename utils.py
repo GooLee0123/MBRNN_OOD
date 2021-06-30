@@ -268,11 +268,10 @@ def unsup_train(db, models, optim, opt):
 
 
 def get_placeholder(nrow, ncol):
-    Placeholder = namedtuple('Placeholder', ['p1', 'p2', 'za1', 'za2', 'dcp'])
+    Placeholder = namedtuple('Placeholder', ['p1', 'p2', 'za', 'dcp'])
 
     ph = Placeholder(torch.empty(nrow, ncol).cuda(),
                      torch.empty(nrow, ncol).cuda(),
-                     torch.empty(nrow).cuda(),
                      torch.empty(nrow).cuda(),
                      torch.empty(nrow).cuda())
     return ph
@@ -324,9 +323,8 @@ def unsup_evaluate(db, models, opt):
 
                 phs[i].p1[store_sidx:store_eidx] = HEprobs
                 phs[i].p2[store_sidx:store_eidx] = LEprobs
-                phs[i].za1[store_sidx:store_eidx] = HEzphot
-                phs[i].za2[store_sidx:store_eidx] = LEzphot
-                phs[i].za2[store_sidx:store_eidx] = dcp_loss
+                phs[i].za[store_sidx:store_eidx] = (HEzphot+LEzphot)/2
+                phs[i].dcp[store_sidx:store_eidx] = dcp_loss
 
             outputs = get_outputs(placeholder_id)
             save_results(outputs, opt, fnames[i])
