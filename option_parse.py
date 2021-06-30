@@ -88,7 +88,7 @@ def Parser():
     ckpt_fd = 'checkpoint'+opt.outfd_prefix
     quant_fd = 'quantity'+opt.outfd_prefix+'_RA_combined_usample_'+opt.load_key
 
-    opt.ckpt_fd = os.path.join('./Checkpoints' opt.ckpt_dn, ckpt_fd)
+    opt.ckpt_fd = os.path.join('./Checkpoints', opt.ckpt_dn, ckpt_fd)
     opt.quant_fd = os.path.join(opt.output_dn, opt.quant_dn, quant_fd)
 
     dirs = [opt.ckpt_fd] if opt.train else [opt.quant_fd]
