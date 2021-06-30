@@ -219,12 +219,12 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
                 else:
                     TS2tol += 1
 
-                if not do_TS3 and not do_TS2 and TS2tol > opt.TS2_patience:
+                if not do_TS3 and not do_TS2 and TS2tol > opt.ts2_patience:
                     logging.info("Start TS2")
                     do_TS2 = True
                     TS2tol = 0
 
-                if do_TS2 and TS2tol > opt.TS3_patience:
+                if do_TS2 and TS2tol > opt.ts3_patience:
                     logging.info("Stop TS2 and start TS3")
                     do_TS2 = False
                     do_TS3 = True
