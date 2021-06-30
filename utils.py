@@ -108,10 +108,8 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
 
         if step != 0 and step % opt.pevery == 0:
             # for log messages
-            avg_HE_cls = \
-                ldic['ptHE'][0]/ldic['ptHE'][1]
-            avg_LE_cls = \
-                ldic['ptLE'][0]/ldic['ptLE'][1]
+            avg_HE_cls = ldic['ptHE'][0]/ldic['ptHE'][1]
+            avg_LE_cls = ldic['ptLE'][0]/ldic['ptLE'][1]
 
             ldic['ptHE'] = [0., 0.]
             ldic['ptLE'] = [0., 0.]
@@ -156,16 +154,13 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
 
                     vHE_probs_in, vLE_probs_in = models(vlocal_batch_in)
 
-                    HEloss_anch = opt.cls_criterion(vHE_probs_in,
-                                                 vlocal_zbin_in)
-                    LEloss_anch = opt.cls_criterion(vLE_probs_in,
-                                                 vlocal_zbin_in)
+                    HEloss_anch = opt.cls_criterion(vHE_probs_in, vlocal_zbin_in)
+                    LEloss_anch = opt.cls_criterion(vLE_probs_in, vlocal_zbin_in)
 
                     vcls += HEloss_anch + LEloss_anch
 
                     # discrepancy
-                    vdcp_id = opt.dcp_criterion(vHE_probs_in,
-                                                vLE_probs_in)
+                    vdcp_id = opt.dcp_criterion(vHE_probs_in, vLE_probs_in)
 
                     ldic['pvHE'] += HEloss_anch
                     ldic['pvLE'] += LEloss_anch
@@ -187,8 +182,7 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_finetune,
 
                     vHE_probs_ul, vLE_probs_ul = models(vlocal_batch_ul)
 
-                    vdcp_loss_ul = opt.dcp_criterion(vHE_probs_ul,
-                                                     vLE_probs_ul)
+                    vdcp_loss_ul = opt.dcp_criterion(vHE_probs_ul, vLE_probs_ul)
 
                     ldic['pvdcp_ul'] += vdcp_loss_ul
                     vstep_ul += 1
@@ -276,6 +270,7 @@ def unsup_train(db, models, optim, opt):
     dur = etime - stime  # training time
     logging.info("Training is done. Took %.3fh" % (dur/3600.))
 
+
 def get_placeholder(nrow, ncol):
     Placeholder = namedtuple('Placeholder', ['p1', 'p2', 'za1', 'za2', 'dcp'])
 
@@ -285,6 +280,7 @@ def get_placeholder(nrow, ncol):
                      torch.empty(nrow).cuda(),
                      torch.empty(nrow).cuda())
     return ph
+
 
 def unsup_evaluate(db, models, opt):
     logging.info(">> Unsupervised evaluate")
@@ -306,8 +302,8 @@ def unsup_evaluate(db, models, opt):
 
     dcp_id = []
     placeholder_id = get_placeholder(idlen, opt.ncls)
-    placeholder_ul = get_placeholder(ullen, opt.ncls)
     placeholder_lo = get_placeholder(lolen, opt.ncls)
+    placeholder_ul = get_placeholder(ullen, opt.ncls)
 
     prefixs = ['id', 'lood', 'ul']
     dbs = [db['eval_id'], db['eval_lo'], db['eval_ul']]
