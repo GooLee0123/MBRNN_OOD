@@ -25,11 +25,21 @@ python main.py --train True
 ```
 
 ## Model Testing
-Since the default setting for the train option is *False*, one may use the below command for the test of the model.
+One may use the below commands to test the TS2 and TS3 model.
+
+### TS2 Model
 
 ```
 python main.py
 ```
+
+### TS3 Model
+
+```
+python main.py --training-stage TS3
+```
+
+
 
 The process will dump an array shaped [*nsamp*, *nbin*\*2+2] for in-distribution, labeled OOD, and unlabeled samples into the folder *Outputs* with *npy* format, where *nsamp* and *nbin* are the number of samples and bins, respectively. The first *nbin*\*2 columns of the array are model output probabilities from high and low entropy models, the next column contains photometric redshifts, and the last column is the OOD score.
 
