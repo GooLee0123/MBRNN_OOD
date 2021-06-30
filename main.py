@@ -1,20 +1,17 @@
-import os
 import itertools
 import logging
-
-from option_parse import Parser
-
-import torch
-from torch.optim.lr_scheduler import ReduceLROnPlateau
+import os
 
 import numpy as np
+import torch
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 import model as Network
 import PS1
 import utils
-
 from loss import AnchorLoss, DiscrepancyLoss
 from optim import Optimizer, Optimizers
+from option_parse import Parser
 
 torch.multiprocessing.set_sharing_strategy('file_system')
 
