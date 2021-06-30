@@ -337,7 +337,7 @@ def unsup_evaluate(db, models, opt):
 
 
 def get_outputs(ph):
-    return np.vstack([ph.p1.cpu().detach().numpy(),
+    return np.hstack([ph.p1.cpu().detach().numpy(),
                      ph.p2.cpu().detach().numpy(),
                      ph.za1.cpu().detach().numpy()[:, np.newaxis],
                      ph.za2.cpu().detach().numpy()[:, np.newaxis],
