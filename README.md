@@ -27,13 +27,13 @@ python main.py --train True
 ## Model Testing
 One may use the below commands to test the TS2 and TS3 model.
 
-### TS2 Model
+### Run TS2 Model for the test
 
 ```
 python main.py
 ```
 
-### TS3 Model
+### Run TS3 Model for the test
 
 ```
 python main.py --training-stage TS3
