@@ -124,9 +124,6 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
                 ldic['tdcp_id'].append(avg_dcp_id)
                 ldic['tdcp_ul'].append(avg_dcp_ul)
 
-                for g in optim.param_groups():
-                    g['lr'] = opt.TS2_lr
-
             for param in optim.param_groups():
                 lr = param['lr']  # learning rate.
 
