@@ -209,7 +209,7 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
                     if dcp_ckpt_cond:
                         best_vdcp_diff = vdcp_diff
 
-                    msg = "checkpoint save condition is met."
+                    msg = "\ncheckpoint save condition is met."
                     logging.info(msg)
 
                     checkpoint = Checkpoint(step, epoch, models, optim, opt=opt)
