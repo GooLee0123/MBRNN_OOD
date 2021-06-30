@@ -72,9 +72,9 @@ def Parser():
     parser.add_argument('--id',
                         default='galaxy', type=str,
                         dest='id', metavar="galaxy")
-    parser.add_argument('--load_key',
+    parser.add_argument('--training_stage',
                         default='TS2', type=str,
-                        dest='load_key', metavar="TS2")
+                        dest='training_stage', metavar="TS2")
 
     opt = config_processing(parser.parse_args(remaining_argv))
     print(opt)
@@ -85,7 +85,7 @@ def Parser():
     opt.outfd_prefix = '_'.join(outfd_option)
 
     ckpt_fd = 'checkpoint'+opt.outfd_prefix
-    quant_fd = 'quantity'+opt.outfd_prefix+'_'+opt.load_key
+    quant_fd = 'quantity'+opt.outfd_prefix+'_'+opt.training_stage
 
     opt.ckpt_fd = os.path.join(opt.ckpt_dn, ckpt_fd)
     opt.quant_fd = os.path.join(opt.output_dn, opt.quant_dn, quant_fd)

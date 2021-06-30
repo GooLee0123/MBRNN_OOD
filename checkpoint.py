@@ -37,14 +37,14 @@ class Checkpoint():
             opt.ckpt_fd, all_times[0])
 
         logger.info("load model state from %s" %
-                    os.path.join(fchckpt, model_state % opt.load_key))
+                    os.path.join(fchckpt, model_state % opt.training_stage))
         resume_model = torch.load(
-            os.path.join(fchckpt, model_state % opt.load_key),
+            os.path.join(fchckpt, model_state % opt.training_stage),
             map_location=opt.device)
         logger.info("load trainer state from %s" %
-                    os.path.join(fchckpt, trainer_state % opt.load_key))
+                    os.path.join(fchckpt, trainer_state % opt.training_stage))
         resume_checkpoint = torch.load(
-            os.path.join(fchckpt, trainer_state % opt.load_key),
+            os.path.join(fchckpt, trainer_state % opt.training_stage),
             map_location=opt.device)
 
         models[0].load_state_dict(resume_model['universal_network_state'])
