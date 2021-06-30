@@ -209,7 +209,7 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
                     if dcp_ckpt_cond:
                         best_vdcp_diff = vdcp_diff
 
-                    msg = "\ncheckpoint save condition is met."
+                    msg = "checkpoint save condition is met."
                     logging.info(msg)
 
                     checkpoint = Checkpoint(step, epoch, models, optim, opt=opt)
@@ -232,9 +232,9 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
                 # for validation log message
                 vdat_len = len(db['val_id'].dataset)
 
-                log_msg = "\nCurrent validation ANCHOR loss: %.5f, " % avg_vloss
+                log_msg = "Current validation ANCHOR loss: %.5f, " % avg_vloss
                 log_msg += "Current validation ID-DCP loss: %.5f, " % avg_vdcp_id
-                log_msg += "UL-DCP loss: %.5f\n" % avg_vdcp_ul
+                log_msg += "UL-DCP loss: %.5f" % avg_vdcp_ul
                 logging.info(log_msg)
 
             models = models.train()
