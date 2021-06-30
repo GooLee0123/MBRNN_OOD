@@ -132,10 +132,10 @@ def main():
     opt = Parser()
 
     if not torch.cuda.is_available():
+        logging.warning("RUN WITHOUT GPU")
         opt.device = 'cpu'
     else:
         opt.device = torch.device('cuda:%s' % opt.gpuid)
-    logging.info("Run with %s" % opt.device)
 
     db = prepare_db(opt)
     opt = prepare_loss(opt)
