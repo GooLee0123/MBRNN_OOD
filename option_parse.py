@@ -117,22 +117,13 @@ def Parser():
             outfd_option.append('BatchOFF')
     outfd_option.append('Gamma%s' % (str(opt.gamma).replace('.', '_')))
     outfd_option.append('DCPW%s' % (str(opt.dcp_weight).replace('.', '_')))
-    if opt.optim_change:
-        outfd_option.append('OptimChange')
+
     opt.outfd_prefix = '_'.join(outfd_option)
 
     ckpt_fd = 'checkpoint'+opt.outfd_prefix
     loss_fd = 'loss'+opt.outfd_prefix
     quant_fd = 'quantity'+opt.outfd_prefix+'_'+opt.ul_prefix+'_'+opt.load_key
     plot_fd = 'plot'+opt.outfd_prefix+'_'+opt.ul_prefix+'_'+opt.load_key
-
-    if opt.psc:
-        if opt.psc_reg == 'low':
-            quant_fd += '_lpsc_%s' % str(opt.psc_thr).replace('.', '_')
-            plot_fd += '_lpsc_%s' % str(opt.psc_thr).replace('.', '_')
-        else:
-            quant_fd += '_hpsc_%s' % str(opt.psc_thr).replace('.', '_')
-            plot_fd += '_hpsc_%s' % str(opt.psc_thr).replace('.', '_')
 
     opt.ckpt_fd = os.path.join(opt.analysis_dn, opt.ckpt_dn, ckpt_fd)
     opt.loss_fd = os.path.join(opt.analysis_dn, opt.loss_dn, loss_fd)
