@@ -1,4 +1,4 @@
-# MBRNN Pytorch Implementation
+# Pytorch Implementation of the OOD detection based on MBRNN
 This repository contains a [PyTorch](https://pytorch.org/) implementation of the multi-stage training strategy of MBRNN for out-of-distribution (OOD) detection introduced in "[Lee et al. 2021]()".
 
 # Installation
