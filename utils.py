@@ -337,11 +337,11 @@ def unsup_evaluate(db, models, opt):
 
 
 def get_outputs(ph):
-    return [ph.p1.cpu().detach().numpy(),
-            ph.p2.cpu().detach().numpy(),
-            ph.za1.cpu().detach().numpy(),
-            ph.za2.cpu().detach().numpy(),
-            ph.dcp.cpu().detach().numpy()]
+    return np.vstack([ph.p1.cpu().detach().numpy(),
+                     ph.p2.cpu().detach().numpy(),
+                     ph.za1.cpu().detach().numpy(),
+                     ph.za2.cpu().detach().numpy(),
+                     ph.dcp.cpu().detach().numpy()])
 
 
 def set_loaded_model(models, opt, optim=None):
