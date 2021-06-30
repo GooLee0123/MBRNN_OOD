@@ -69,11 +69,11 @@ class Checkpoint():
             date_time = time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime())
         elif ftune and not ptune:
             # overwrite
-            key = 'fine_tuned'
+            key = 'TS2'
             date_time = sorted(os.listdir(self.opt.ckpt_fd), reverse=True)[0]
         elif not ftune and ptune:
             # overwrite
-            key = 'post_tuned'
+            key = 'TS3'
             dates = os.listdir(self.opt.ckpt_fd)
             if not len(dates):
                 date_time = time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime())
