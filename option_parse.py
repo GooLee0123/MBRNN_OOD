@@ -112,9 +112,7 @@ def Parser():
 
     outfd_option = ['', 'NC'+str(opt.ncls)]
     if opt.finetune:
-        outfd_option.append('TwoFoldTrain')
-        if opt.batch_turnoff:
-            outfd_option.append('BatchOFF')
+        outfd_option.append('ThreeFoldTrain')
     outfd_option.append('Gamma%s' % (str(opt.gamma).replace('.', '_')))
     outfd_option.append('DCPW%s' % (str(opt.dcp_weight).replace('.', '_')))
 
