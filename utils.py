@@ -230,7 +230,7 @@ def unsup_train_epoch(models, optim, db, step, epoch, do_TS2,
                 vdat_len = len(db['val_id'].dataset)
 
                 log_msg = "Current validation ANCHOR loss (HE+LE): %.5f, " % avg_vloss
-                log_msg += "Current OOD score of validation ID samples: %.5f, " % -(avg_vdcp_id-opt.dcp_margin)
+                log_msg += "OOD score of ID samples: %.5f, " % -(avg_vdcp_id-opt.dcp_margin)
                 log_msg += "OOD score of UL samples: %.5f" % -(avg_vdcp_ul-opt.dcp_margin)
                 logging.info(log_msg)
 
