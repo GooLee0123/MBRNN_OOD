@@ -30,7 +30,7 @@ One may use the below commands to test the TS2 and TS3 model.
 ### Run TS2 Model for the test
 
 ```
-python main.py
+python main.py --training-stage TS3
 ```
 
 ### Run TS3 Model for the test
