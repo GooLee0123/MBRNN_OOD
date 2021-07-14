@@ -397,7 +397,7 @@ def unsup_infer(db, models, opt):
                 phs[i].zm[store_sidx:store_eidx] = zmode
                 phs[i].sd[store_sidx:store_eidx] = zsig
 
-            outputs = get_outputs(placeholder_id)
+            outputs = get_outputs(placeholder_id, opt)
             save_results(outputs, opt, fnames[i])
 
 
