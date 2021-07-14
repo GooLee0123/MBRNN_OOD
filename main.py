@@ -136,9 +136,9 @@ def main():
     if opt.train:
         utils.unsup_train(db, models, optim, opt)
     else:
-        training_stages = ['TS2', 'TS3']
-        for ts in training_stages:
-            opt.training_stage = ts
+        stages = ['TS2', 'TS3']
+        for ts in stages:
+            opt.stage = ts
             if opt.test:
                 utils.unsup_test(db, models, opt)
             elif opt.infer:
