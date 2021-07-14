@@ -267,18 +267,76 @@ def unsup_train(db, models, optim, opt):
     logging.info("Training is done. Took %.3fh" % (dur/3600.))
 
 
-def get_placeholder(opt, nrow, ncol):
-    Placeholder = namedtuple('Placeholder', ['p1', 'p2', 'za', 'dcp'])
+def get_placeholder(opt, nrow, ncol, infer=False):
+    Placeholder = namedtuple('Placeholder', ['p1', 'p2', 'dcp', 'za'])
 
     ph = Placeholder(torch.empty(nrow, ncol).to(opt.device),
-                     torch.empty(nrow, ncol).to(opt.device),
-                     torch.empty(nrow).to(opt.device),
-                     torch.empty(nrow).to(opt.device))
+                    torch.empty(nrow, ncol).to(opt.device),
+                    torch.empty(nrow).to(opt.device),
+                    torch.empty(nrow).to(opt.device))
+    
+    if infer:
+        Placeholder.zm = torch.empty(nrow).to(opt.device)
+        Placeholder.sd = torch.empty(nrow).to(opt.device)
+    
     return ph
 
 
-def unsup_evaluate(db, models, opt):
-    logging.info(">> Unsupervised evaluate")
+def unsup_test(db, models, opt):
+    logging.info(">> Test started")
+
+    # model setting
+    models, _, _ = set_loaded_model(models, opt)
+
+    models = models.eval().zero_grad().to(opt.device)
+
+    eval_set_id = db['eval_id'].dataset
+    eval_set_lo = db['eval_lo'].dataset
+    eval_set_ul = db['eval_ul'].dataset
+    zLE_id = eval_set_id.z.numpy()
+    zLE_lo = eval_set_lo.z.numpy()
+
+    idlen = len(eval_set_id)
+    lolen = len(eval_set_lo)
+    ullen = len(eval_set_ul)
+
+    dcp_id = []
+    placeholder_id = get_placeholder(opt, idlen, opt.ncls, infer=True)
+    placeholder_lo = get_placeholder(opt, lolen, opt.ncls, infer=True)
+    placeholder_ul = get_placeholder(opt, ullen, opt.ncls, infer=True)
+
+    fnames = ['output_id', 'output_lood', 'output_ul']
+    dbs = [db['eval_id'], db['eval_lo'], db['eval_ul']]
+    phs = [placeholder_id, placeholder_lo, placeholder_ul]
+    with torch.no_grad():
+        for i in range(3):
+            for bepoch, (local_batch, local_zbin) in enumerate(dbs[i]):
+                binc = eval_set_id.binc.to(opt.device)
+                local_batch = local_batch.to(opt.device)
+                local_zbin = local_zbin.to(opt.device)
+
+                # input into model
+                HEprobs, LEprobs = models(local_batch)
+
+                dcp_loss = opt.dcp_criterion(HEprobs, LEprobs)
+
+                avg_probs = (HEprobs+LEprobs)/2
+                zphot = torch.sum(avg_probs*binc, dim=1).view(-1)
+
+                store_sidx = bepoch*opt.batch_size
+                store_eidx = store_sidx+opt.batch_size
+
+                phs[i].p1[store_sidx:store_eidx] = HEprobs
+                phs[i].p2[store_sidx:store_eidx] = LEprobs
+                phs[i].dcp[store_sidx:store_eidx] = dcp_loss
+                phs[i].za[store_sidx:store_eidx] = zphot
+
+            outputs = get_outputs(placeholder_id)
+            save_results(outputs, opt, fnames[i])
+
+
+def unsup_infer(db, models, opt):
+    logging.info(">> Inference started")
 
     # model setting
     models, _, _ = set_loaded_model(models, opt)
@@ -315,26 +373,43 @@ def unsup_evaluate(db, models, opt):
 
                 dcp_loss = opt.dcp_criterion(HEprobs, LEprobs)
 
-                HEzphot = torch.sum(HEprobs*binc, dim=1).view(-1)
-                LEzphot = torch.sum(LEprobs*binc, dim=1).view(-1)
+                avg_probs = (HEprobs+LEprobs)/2
+                zphot = torch.sum(avg_probs*binc, dim=1).view(-1)
+
+                # mode redshifts
+                prob_argmax = torch.argmax(avg_probs, dim=1)
+                zmode = binc[prob_argmax]
+
+                # standard deviation
+                zsig = torch.sum(avg_probs*(binc-zphot.view(-1, 1))**2., dim=1)
 
                 store_sidx = bepoch*opt.batch_size
                 store_eidx = store_sidx+opt.batch_size
 
                 phs[i].p1[store_sidx:store_eidx] = HEprobs
                 phs[i].p2[store_sidx:store_eidx] = LEprobs
-                phs[i].za[store_sidx:store_eidx] = (HEzphot+LEzphot)/2
                 phs[i].dcp[store_sidx:store_eidx] = dcp_loss
+                phs[i].za[store_sidx:store_eidx] = zphot
+                phs[i].zm[store_sidx:store_eidx] = zmode
+                phs[i].sd[store_sidx:store_eidx] = zsig
 
             outputs = get_outputs(placeholder_id)
             save_results(outputs, opt, fnames[i])
 
 
-def get_outputs(ph):
-    return np.hstack([ph.p1.cpu().detach().numpy(),
-                     ph.p2.cpu().detach().numpy(),
-                     ph.za.cpu().detach().numpy()[:, np.newaxis],
-                     ph.dcp.cpu().detach().numpy()[:, np.newaxis]])
+def get_outputs(ph, infer=False):
+    if infer:
+        return np.hstack([ph.p1.cpu().detach().numpy(),
+                        ph.p2.cpu().detach().numpy(),
+                        ph.dcp.cpu().detach().numpy()[:, np.newaxis],
+                        ph.za.cpu().detach().numpy()[:, np.newaxis],
+                        ph.zm.cpu().detach().numpy()[:, np.newaxis],
+                        ph.sd.cpu().detach().numpy()[:, np.newaxis]])
+    else:
+        return np.hstack([ph.p1.cpu().detach().numpy(),
+                        ph.p2.cpu().detach().numpy(),
+                        ph.dcp.cpu().detach().numpy()[:, np.newaxis],
+                        ph.za.cpu().detach().numpy()[:, np.newaxis]])
 
 
 def set_loaded_model(models, opt, optim=None):

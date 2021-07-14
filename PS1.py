@@ -19,10 +19,8 @@ class Dataset(Dataset):
         self.dopt = dopt
         self.phase = phase
 
-        self.ind = opt.ind
         self.ncls = opt.ncls
         self.train = opt.train
-        self.method = opt.method
         self.bin_dn = opt.bin_dn
         self.data_dn = opt.data_dn
 
@@ -49,11 +47,11 @@ class Dataset(Dataset):
     def zbinning(self, z, bins=None):
         _z = z.ravel()
 
-        if self.dopt == 'LOOD' and self.method == 'unsup':
+        if self.dopt == 'LOOD':
             zcls, binc = (None, None)
         else:
-            bin_fn = '%s/%s_redshifts_%s-uniform.txt' % \
-                (self.bin_dn, self.ind, self.ncls)
+            bin_fn = '%s/galaxy_redshifts_%s-uniform.txt' % \
+                (self.bin_dn, self.ncls)
             log_msg = "Read uniform bins for %s from %s" % (self.phase, bin_fn)
             self.logger.info(log_msg)
 
@@ -75,14 +73,12 @@ class Dataset(Dataset):
 
     def _load_data(self):
         if self.dopt == 'ID':
-            _prefix = self.ind
+            _prefix = 'id'
         elif self.dopt == 'UL':
-            _prefix = 'unlabeled'
+            _prefix = 'ul'
         else:
-            _prefix = 'labeled_ood'
-        fn = '%s/PS-DR1_%s_%s.npy' % (self.data_dn, _prefix, self.phase)
-        if self.dopt == 'UL':
-            fn = fn.replace('.npy', '_RA_combined_usample.npy')
+            _prefix = 'lood'
+        fn = '%s/%s_%s.npy' % (self.data_dn, self.phase, _prefix)
         self.logger.info("load data from %s" % fn)
 
         # data = np.load(fn)
@@ -112,11 +108,7 @@ class Dataset(Dataset):
     def __getitem__(self, index):
         if self.dopt == 'UL' or self.dopt == 'LOOD':
             X, y = self.X[index], self.y[index]
-            # if self.method == 'unsup':
             return X, y
-            # else:
-            #     zcls = self.zcls[index]
-            #     return X, y, zcls
         else:
             X, zcls = self.X[index], self.zcls[index]
             return X, zcls

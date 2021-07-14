@@ -25,21 +25,12 @@ logging.basicConfig(
 
 
 def prepare_optim(models, opt):
-    if opt.optim.upper() == 'ADAM':
-        optim = torch.optim.Adam(
-                    list(models[0].parameters()) +
-                    list(models[1].parameters()),
-                    lr=0.0008,
-                    betas=(0.5, 0.999),
-                    weight_decay=5e-5)
-    elif opt.optim.upper() == 'SGD':
-        optim = torch.optim.SGD(
-                    list(models[0].parameters()) +
-                    list(models[1].parameters()),
-                    lr=0.1,
-                    weight_decay=5e-5)
-    else:
-        raise NotImplementedError()
+    optim = torch.optim.Adam(
+                list(models[0].parameters()) +
+                list(models[1].parameters()),
+                lr=0.0008,
+                betas=(0.5, 0.999),
+                weight_decay=5e-5)
 
     # setting optimizer
     optimizer = Optimizer(
@@ -144,8 +135,10 @@ def main():
 
     if opt.train:
         utils.unsup_train(db, models, optim, opt)
-    else:
-        utils.unsup_evaluate(db, models, opt)
+    elif opt.test:
+        utils.unsup_test()(db, models, opt)
+    elif opt.infer:
+        utils.unsup_infer(db, models, opt)
 
 
 if __name__ == '__main__':

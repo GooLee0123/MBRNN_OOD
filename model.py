@@ -75,7 +75,6 @@ class Models():
         self.models = models
         self.phase = phase
 
-        self.method = opt.method
         self.noise = opt.noise
         self.opt = opt
 

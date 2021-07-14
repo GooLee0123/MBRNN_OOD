@@ -1,5 +1,6 @@
 import argparse
 import configparser
+import logging
 import os
 
 
@@ -55,42 +56,33 @@ def Parser():
     for i in range(Noption):
         parser.set_defaults(**OptionDict[i])
 
-
-    parser.add_argument('--train',
-                        default=False, type=str2bool,
-                        dest='train', metavar="True")
-
-    parser.add_argument('--gpuid',
-                        default='0', type=str,
-                        dest='gpuid', metavar="0")
-    parser.add_argument('--gamma',
-                        default='0', type=str,
-                        dest='gamma', metavar="0")
     parser.add_argument('--log-level',
                         default='info', type=str,
                         dest='log_level', metavar="INFO")
-    parser.add_argument('--id',
-                        default='galaxy', type=str,
-                        dest='id', metavar="galaxy")
     parser.add_argument('--training_stage',
                         default='TS2', type=str,
                         dest='training_stage', metavar="TS2")
 
+    parser.add_argument('--infer', action='store_true', dest='infer')
+    parser.add_argument('--test', action='store_true', dest='test')
+
     opt = config_processing(parser.parse_args(remaining_argv))
-    print(opt)
+    if opt.infer or opt.test:
+        opt.train = False
+
+    logging.info(opt)
 
     outfd_option = ['', 'NC'+str(opt.ncls)]
     outfd_option.append('Gamma%s' % (str(opt.gamma).replace('.', '_')))
-
     opt.outfd_prefix = '_'.join(outfd_option)
 
+    out_fd = 'output'+opt.outfd_prefix+'_'+opt.training_stage
     ckpt_fd = 'checkpoint'+opt.outfd_prefix
-    quant_fd = 'quantity'+opt.outfd_prefix+'_'+opt.training_stage
 
+    opt.out_fd = os.path.join(opt.out_dn, out_fd)
     opt.ckpt_fd = os.path.join(opt.ckpt_dn, ckpt_fd)
-    opt.quant_fd = os.path.join(opt.output_dn, opt.quant_dn, quant_fd)
 
-    dirs = [opt.ckpt_fd] if opt.train else [opt.quant_fd]
+    dirs = [opt.ckpt_fd] if opt.train else [opt.out_fd]
 
     make_dirs(dirs)
     return opt
