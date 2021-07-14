@@ -75,7 +75,6 @@ class Models():
         self.models = models
         self.phase = phase
 
-        self.noise = opt.noise
         self.opt = opt
 
         self.logger = logging.getLogger(__name__)
