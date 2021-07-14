@@ -301,9 +301,9 @@ def unsup_test(db, models, opt):
     ullen = len(eval_set_ul)
 
     dcp_id = []
-    placeholder_id = get_placeholder(opt, idlen, opt.ncls, infer=True)
-    placeholder_lo = get_placeholder(opt, lolen, opt.ncls, infer=True)
-    placeholder_ul = get_placeholder(opt, ullen, opt.ncls, infer=True)
+    placeholder_id = get_placeholder(opt, idlen, opt.ncls)
+    placeholder_lo = get_placeholder(opt, lolen, opt.ncls)
+    placeholder_ul = get_placeholder(opt, ullen, opt.ncls)
 
     fnames = ['output_id', 'output_lood', 'output_ul']
     dbs = [db['eval_id'], db['eval_lo'], db['eval_ul']]
@@ -354,9 +354,9 @@ def unsup_infer(db, models, opt):
     ullen = len(eval_set_ul)
 
     dcp_id = []
-    placeholder_id = get_placeholder(opt, idlen, opt.ncls)
-    placeholder_lo = get_placeholder(opt, lolen, opt.ncls)
-    placeholder_ul = get_placeholder(opt, ullen, opt.ncls)
+    placeholder_id = get_placeholder(opt, idlen, opt.ncls, infer=True)
+    placeholder_lo = get_placeholder(opt, lolen, opt.ncls, infer=True)
+    placeholder_ul = get_placeholder(opt, ullen, opt.ncls, infer=True)
 
     fnames = ['output_id', 'output_lood', 'output_ul']
     dbs = [db['eval_id'], db['eval_lo'], db['eval_ul']]
