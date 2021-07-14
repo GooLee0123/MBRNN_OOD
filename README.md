@@ -21,7 +21,7 @@ TBP
 ## Training of The Model
 Although our deploy version code includes the pre-trained network, one can train a new model from scratch using below command.
 ```
-python main.py --train True
+python main.py
 ```
 
 ## Model Testing
