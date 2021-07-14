@@ -1,4 +1,4 @@
-# Pytorch Implementation of the OOD detection based on MBRNN
+# OOD Detection Pytorch Implementation Based on MBRNN
 This repository contains a [PyTorch](https://pytorch.org/) implementation of the multi-stage training strategy of MBRNN for out-of-distribution (OOD) detection introduced in "[Lee et al. 2021]()".
 
 # Installation
@@ -18,7 +18,7 @@ pip install numpy
 TBP
 ```
 
-## Training of The Model
+## Model Training
 Although our deploy version code includes the pre-trained network, one can train a new model from scratch using below command.
 ```
 python main.py
@@ -33,7 +33,7 @@ python main.py --test
 
 The processes will dump arrays containing TS2 and TS3 model outputs each shaped [*nsamp*, *nbin*\*2+2] for in-distribution, labeled OOD, and unlabeled samples into the folder *Outputs* with *npy* format, where *nsamp* and *nbin* are the number of samples and bins, respectively. The first *nbin*\*2 columns of the array are model output probabilities from high and low entropy models. The following column contains the OOD score, and the last column is the average photometric redshift.
 
-### Model Inference
+## Model Inference
 
 ```
 python main.py --infer
