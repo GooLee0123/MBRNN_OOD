@@ -140,7 +140,7 @@ def main():
         for ts in training_stages:
             opt.training_stage = ts
             if opt.test:
-                utils.unsup_test()(db, models, opt)
+                utils.unsup_test(db, models, opt)
             elif opt.infer:
                 utils.unsup_infer(db, models, opt)
 
