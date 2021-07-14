@@ -267,18 +267,18 @@ def unsup_train(db, models, optim, opt):
     logging.info("Training is done. Took %.3fh" % (dur/3600.))
 
 
-def get_placeholder(opt, nrow, ncol, infer=False):
+def get_placeholder(opt, nrow):
     Placeholder = namedtuple('Placeholder', ['p1', 'p2', 'dcp', 'za'])
 
-    ph = Placeholder(torch.empty(nrow, ncol).to(opt.device),
-                    torch.empty(nrow, ncol).to(opt.device),
+    ph = Placeholder(torch.empty(nrow, opt.ncls).to(opt.device),
+                    torch.empty(nrow, opt.ncls).to(opt.device),
                     torch.empty(nrow).to(opt.device),
                     torch.empty(nrow).to(opt.device))
     
-    if infer:
+    if opt.infer:
         Placeholder.zm = torch.empty(nrow).to(opt.device)
         Placeholder.sd = torch.empty(nrow).to(opt.device)
-    
+
     return ph
 
 
@@ -301,9 +301,9 @@ def unsup_test(db, models, opt):
     ullen = len(eval_set_ul)
 
     dcp_id = []
-    placeholder_id = get_placeholder(opt, idlen, opt.ncls)
-    placeholder_lo = get_placeholder(opt, lolen, opt.ncls)
-    placeholder_ul = get_placeholder(opt, ullen, opt.ncls)
+    placeholder_id = get_placeholder(opt, idlen)
+    placeholder_lo = get_placeholder(opt, lolen)
+    placeholder_ul = get_placeholder(opt, ullen)
 
     fnames = ['output_id', 'output_lood', 'output_ul']
     dbs = [db['eval_id'], db['eval_lo'], db['eval_ul']]
@@ -425,13 +425,11 @@ def set_loaded_model(models, opt, optim=None):
     return models, optim, [epoch, step]
 
 
-def save_results(outputs, opt, fn=None):
+def save_results(outputs, opt):
     if not os.path.exists(opt.quant_fd):
         os.makedirs(opt.quant_fd)
-    if fn is None:
-        out_fn = os.path.join(opt.quant_fd, opt.out_fn)
-    else:
-        out_fn = os.path.join(opt.quant_fd, fn)
+    fn = 'inference_output.npy' if opt.infer else 'test_output.npy'
+    out_fn = os.path.join(opt.quant_fd, fn)
 
     np.save(out_fn, outputs)
     logging.info("Outputs are saved at %s" % out_fn)
