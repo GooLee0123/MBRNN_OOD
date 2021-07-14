@@ -27,19 +27,19 @@ python main.py --train True
 ## Model Testing
 One may use the below commands to test the TS2 and TS3 model.
 
-### Run TS2 Model for the test
-
 ```
-python main.py --training-stage TS2
+python main.py --test
 ```
 
-### Run TS3 Model for the test
+The processes will dump arrays containing TS2 and TS3 model outputs each shaped [*nsamp*, *nbin*\*2+2] for in-distribution, labeled OOD, and unlabeled samples into the folder *Outputs* with *npy* format, where *nsamp* and *nbin* are the number of samples and bins, respectively. The first *nbin*\*2 columns of the array are model output probabilities from high and low entropy models, the following column contains the OOD score, and the last column is the average photometric redshift.
+
+### Model Inference
 
 ```
-python main.py --training-stage TS3
+python main.py --infer
 ```
 
-The processes will dump an array shaped [*nsamp*, *nbin*\*2+2] for in-distribution, labeled OOD, and unlabeled samples into the folder *Outputs* with *npy* format, where *nsamp* and *nbin* are the number of samples and bins, respectively. The first *nbin*\*2 columns of the array are model output probabilities from high and low entropy models, the following column contains photometric redshifts, and the last column is the OOD score.
+The processes will dump arrays containing TS2 and TS3 model outputs each shaped [*nsamp*, *nbin*\*2+4] for in-distribution, labeled OOD, and unlabeled samples into the folder *Outputs* with *npy* format, where *nsamp* and *nbin* are the number of samples and bins, respectively. The first *nbin*\*2 columns of the array are model output probabilities from high and low entropy models, each of the following columns is the OOD score, average photometric redshift, mode redshift, and the standard deviation of the model output probability distributions.
 
 ## Option Change
 We deploy the model with the best-performing configuration described in our paper, but one can adjust the model structure and other settings by modifying the options of the *config_file/config.cfg* file.
