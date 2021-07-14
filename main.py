@@ -135,10 +135,14 @@ def main():
 
     if opt.train:
         utils.unsup_train(db, models, optim, opt)
-    elif opt.test:
-        utils.unsup_test()(db, models, opt)
-    elif opt.infer:
-        utils.unsup_infer(db, models, opt)
+    else:
+        traininig_stages = ['TS2', 'TS3']
+        for ts in training_stages:
+            opt.training_stage = ts
+            if opt.test:
+                utils.unsup_test()(db, models, opt)
+            elif opt.infer:
+                utils.unsup_infer(db, models, opt)
 
 
 if __name__ == '__main__':

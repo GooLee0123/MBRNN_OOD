@@ -59,9 +59,6 @@ def Parser():
     parser.add_argument('--log-level',
                         default='info', type=str,
                         dest='log_level', metavar="INFO")
-    parser.add_argument('--training_stage',
-                        default='TS2', type=str,
-                        dest='training_stage', metavar="TS2")
 
     parser.add_argument('--infer', action='store_true', dest='infer')
     parser.add_argument('--test', action='store_true', dest='test')
@@ -76,7 +73,7 @@ def Parser():
     outfd_option.append('Gamma%s' % (str(opt.gamma).replace('.', '_')))
     opt.outfd_prefix = '_'.join(outfd_option)
 
-    out_fd = 'output'+opt.outfd_prefix+'_'+opt.training_stage
+    out_fd = 'output'+opt.outfd_prefix
     ckpt_fd = 'checkpoint'+opt.outfd_prefix
 
     opt.out_fd = os.path.join(opt.out_dn, out_fd)
