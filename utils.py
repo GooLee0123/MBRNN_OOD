@@ -283,7 +283,7 @@ def get_placeholder(opt, nrow):
 
 
 def unsup_test(db, models, opt):
-    logging.info(">> %s model test started" % opt.training_stage)
+    logging.info(">> %s model test started" % opt.stage)
 
     # model setting
     models, _, _ = set_loaded_model(models, opt)
@@ -338,7 +338,7 @@ def unsup_test(db, models, opt):
 
 
 def unsup_infer(db, models, opt):
-    logging.info(">> %s model inference started" % opt.training_stage)
+    logging.info(">> %s model inference started" % opt.stage)
 
     # model setting
     models, _, _ = set_loaded_model(models, opt)
@@ -432,7 +432,7 @@ def set_loaded_model(models, opt, optim=None):
 def save_results(outputs, opt, fn):
     if not os.path.exists(opt.out_fd):
         os.makedirs(opt.out_fd)
-    fn += '_' + opt.training_stage
+    fn += '_' + opt.stage
     out_fn = os.path.join(opt.out_fd, fn)
 
     np.save(out_fn, outputs)
