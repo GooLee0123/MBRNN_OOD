@@ -305,7 +305,9 @@ def unsup_test(db, models, opt):
     placeholder_lo = get_placeholder(opt, lolen)
     placeholder_ul = get_placeholder(opt, ullen)
 
-    fnames = ['output_id', 'output_lood', 'output_ul']
+    fnames = ['test_output_id',
+              'test_output_lood',
+              'test_output_ul']
     dbs = [db['eval_id'], db['eval_lo'], db['eval_ul']]
     phs = [placeholder_id, placeholder_lo, placeholder_ul]
     with torch.no_grad():
@@ -358,7 +360,9 @@ def unsup_infer(db, models, opt):
     placeholder_lo = get_placeholder(opt, lolen)
     placeholder_ul = get_placeholder(opt, ullen)
 
-    fnames = ['output_id', 'output_lood', 'output_ul']
+    fnames = ['inference_output_id',
+              'inference_output_lood',
+              'inference_output_ul']
     dbs = [db['eval_id'], db['eval_lo'], db['eval_ul']]
     phs = [placeholder_id, placeholder_lo, placeholder_ul]
     with torch.no_grad():
@@ -425,10 +429,9 @@ def set_loaded_model(models, opt, optim=None):
     return models, optim, [epoch, step]
 
 
-def save_results(outputs, opt):
+def save_results(outputs, opt, fn):
     if not os.path.exists(opt.quant_fd):
         os.makedirs(opt.quant_fd)
-    fn = 'inference_output.npy' if opt.infer else 'test_output.npy'
     out_fn = os.path.join(opt.quant_fd, fn)
 
     np.save(out_fn, outputs)
