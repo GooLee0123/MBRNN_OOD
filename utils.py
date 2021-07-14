@@ -401,8 +401,8 @@ def unsup_infer(db, models, opt):
             save_results(outputs, opt, fnames[i])
 
 
-def get_outputs(ph, infer=False):
-    if infer:
+def get_outputs(ph, opt):
+    if opt.infer:
         return np.hstack([ph.p1.cpu().detach().numpy(),
                         ph.p2.cpu().detach().numpy(),
                         ph.dcp.cpu().detach().numpy()[:, np.newaxis],
