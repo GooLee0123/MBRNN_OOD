@@ -283,7 +283,7 @@ def get_placeholder(opt, nrow):
 
 
 def unsup_test(db, models, opt):
-    logging.info(">> Test started")
+    logging.info(">> %s model test started" % opt.training_stage)
 
     # model setting
     models, _, _ = set_loaded_model(models, opt)
@@ -338,7 +338,7 @@ def unsup_test(db, models, opt):
 
 
 def unsup_infer(db, models, opt):
-    logging.info(">> Inference started")
+    logging.info(">> %s model inference started" % opt.training_stage)
 
     # model setting
     models, _, _ = set_loaded_model(models, opt)
