@@ -432,8 +432,8 @@ def set_loaded_model(models, opt, optim=None):
 def save_results(outputs, opt, fn):
     if not os.path.exists(opt.out_fd):
         os.makedirs(opt.out_fd)
-    out_fn = os.path.join(opt.out_fd,
-                          fn.replace('.npy', '%s.npy' % opt.training_stage))
+    fn = fn.replace('.npy', '%s.npy' % opt.training_stage)
+    out_fn = os.path.join(opt.out_fd, fn)
 
     np.save(out_fn, outputs)
     logging.info("Outputs are saved at %s" % out_fn)
