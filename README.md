@@ -14,9 +14,7 @@ pip install numpy
 # How to Run The Model
 
 ## Data Preparation
-```
-TBP
-```
+Because the core of the model, i.e., the model to estimate photometric redshifts, follows the same model as our paper I ([Lee & Shin 2021](https://arxiv.org/abs/2110.05726)), follow the instruction for data preparation given in https://github.com/GooLee0123/MBRNN.
 
 ## Model Training
 Although our deploy version code includes the pre-trained network, one can train a new model from scratch using below command.
